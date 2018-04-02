@@ -97,11 +97,17 @@ func SignPKCS1v15(src, key []byte, hash crypto.Hash) ([]byte, error) {
 		return nil, errors.New("private key error")
 	}
 
-	var pri *rsa.PrivateKey
-	pri, err = x509.ParsePKCS1PrivateKey(block.Bytes)
+	var parsedKey interface{}
+	parsedKey, err = x509.ParsePKCS8PrivateKey(block.Bytes)
 	if err != nil {
 		return nil, err
 	}
+	var pri *rsa.PrivateKey
+	var ok bool
+	if pri, ok = parsedKey.(*rsa.PrivateKey); !ok {
+		return nil, errors.New("Key is not a valid RSA private key")
+	}
+
 	return rsa.SignPKCS1v15(rand.Reader, pri, hash, hashed)
 }
 

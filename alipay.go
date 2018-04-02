@@ -59,6 +59,10 @@ func (this *AliPay) URLValues(param AliPayParam) (value url.Values, err error) {
 	var ps = param.Params()
 	if ps != nil {
 		for key, value := range ps {
+			if value == "" {
+				continue
+			}
+
 			p.Add(key, value)
 		}
 	}
